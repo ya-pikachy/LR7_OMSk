@@ -237,13 +237,30 @@ export default function Mapgl() {
             updateZoom();
 
             // Инициализируем Directions
-            if (window.mapgl && window.mapgl.Directions) {
-                const directions = new window.mapgl.Directions(map, {
-                    directionsApiKey: '2ba0ca1c-c356-43ea-846a-046aa834957d'
-                });
-                directionsRef.current = directions;
-                console.log('✅ Directions инициализирован');
-            }
+            // Инициализируем Directions
+            setTimeout(() => {
+                if (window.Directions) {
+                    const directions = new window.Directions(map, {
+                        directionsApiKey: '2ba0ca1c-c356-43ea-846a-046aa834957d'
+                    });
+                    directionsRef.current = directions;
+                    console.log('✅ Directions инициализирован');
+                } else {
+                    console.log('⏳ Directions плагин загружается...');
+                    // Повторная попытка через 1 секунду
+                    setTimeout(() => {
+                        if (window.Directions) {
+                            const directions = new window.Directions(map, {
+                                directionsApiKey: '2ba0ca1c-c356-43ea-846a-046aa834957d'
+                            });
+                            directionsRef.current = directions;
+                            console.log('✅ Directions инициализирован (со второй попытки)');
+                        } else {
+                            console.error('❌ Directions плагин не загружен!');
+                        }
+                    }, 1000);
+                }
+            }, 500);
 
             // Запускаем режим по умолчанию (тепловая карта)
             map.on('styleload', () => {
